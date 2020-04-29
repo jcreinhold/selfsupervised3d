@@ -65,6 +65,18 @@ def doersch_patches(img:torch.Tensor, patch_size:float=0.2, patch_dim:int=25, of
     return (ctr, qry), goal
 
 
+def doersch_collate(lst):
+    ctrs, qrys, goals = [], [], []
+    for (ctr, qry), goal in lst:
+        ctrs.append(ctr)
+        qrys.append(qry)
+        goals.append(goal)
+    ctrs = torch.stack(ctrs)
+    qrys = torch.stack(qrys)
+    goals = torch.cat(goals)
+    return (ctrs, qrys), goals
+
+
 class DoerschDataset(Dataset):
     def __init__(self, img_dir:List[str], patch_size:float=0.4, patch_dim:int=25, offset:float=0.5):
         """

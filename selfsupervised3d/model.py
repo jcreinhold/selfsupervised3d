@@ -190,7 +190,7 @@ class DoerschNet(nn.Module):
     """
     Creates the 3D feature descriptors as described in the extended Doersch approach [1].
     original expected input size: (c,d,h,w) = ([user-defined],25,25,25)
-    output size: (c,d,h,w) = (192,1,1,1)
+    output size: (c,d,h,w) = (192,1,1,1), i.e., a vector w/ extra dimensions
 
     References:
         [1] M. Blendowski et al. "How to Learn from Unlabeled Volume Data:
@@ -243,9 +243,11 @@ class DoerschNet(nn.Module):
 
 class DoerschDecodeNet(nn.Module):
     """
-    This CNN takes two feature descriptors, created from DoerschNet, as input.
+    Takes two feature descriptors (viz., vectors) as input; created from DoerschNet
     In this case, the task is a classification problem; the output guesses the
     relative position of descriptor1 w.r.t. descriptor2 (one of six major directions)
+    original expected input size: (c,d,h,w) = (192,1,1,1), i.e., a vector w/ extra dimensions
+    output size: (c,) = (6,)
 
     References:
         [1] M. Blendowski et al. "How to Learn from Unlabeled Volume Data:
@@ -267,13 +269,11 @@ class DoerschDecodeNet(nn.Module):
             nn.GroupNorm(4, 32),
             nn.LeakyReLU())
         self.layer_out = nn.Conv3d(32, 6, 1)
-        self.global_avg_pool = nn.AdaptiveAvgPool3d(1)
 
     def forward(self, x1, x2):
         x = torch.cat((x1, x2), 1)
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.layer3(x)
-        x = self.layer_out(x)
-        x = self.global_avg_pool(x)
+        x = self.layer_out(x).view(-1, 6)
         return x
