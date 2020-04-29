@@ -16,6 +16,7 @@ Created on: April 28, 2020
 """
 
 __all__ = ['DoerschDataset',
+           'doersch_collate',
            'doersch_patches']
 
 from typing import List
