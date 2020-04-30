@@ -20,23 +20,24 @@ __all__ = ['heatmap']
 import torch
 
 
-def heatmap(xdelta, ydelta, hsigma, pwidth, g0, g1):
+def heatmap(xdelta:float, ydelta:float, sigma:float, heatmap_dim:int=19):
     """
     creates a (gaussian-blurred) heatmap from x- and y-offsets
+
+    Args:
+        xdelta (float): offset for gauss-blob in x direction
+        ydelta (float): offset for gauss-blob in y direction
+        sigma (float)-> value of sigma in the gaussian term
+            (see the eq. in `Details on Heatmap Network Training` in [1])
+        heatmap_dim (int): side length of the (square) output heatmap
 
     References:
         [1] M. Blendowski et al. "How to Learn from Unlabeled Volume Data:
             Self-supervised 3D Context Feature Learning." MICCAI. 2019.
         [2] https://github.com/multimodallearning/miccai19_self_supervision
     """
-    # for broadcast along right dimensions
-    xdelta = xdelta.view(-1,1,1,1)
-    ydelta = ydelta.view(-1,1,1,1)
-    bsz = xdelta.size(0)
-    g0.requires_grad = False
-    g1.requires_grad = False
-    out = (g0 - xdelta)**2 + (g1 - ydelta)**2
-    out *= -1
-    out *= hsigma.view(bsz,1,1,1).expand(bsz,1,pwidth,pwidth).to(xdelta.device)
-    out = 10 * torch.exp(out)
+    grid = torch.linspace(-1, 1, heatmap_dim)
+    g1, g0 = torch.meshgrid(grid, grid)
+    g1, g0 = g1.unsqueeze(0), g0.unsqueeze(0)
+    out = 10 * torch.exp(-1 * sigma * ((g0 - xdelta)**2 + (g1 - ydelta)**2))
     return out
