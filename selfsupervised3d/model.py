@@ -42,10 +42,12 @@ class D2DConvNet(nn.Module):
         super().__init__()
         # takes 3 neighboring slices in the channel dimension as input
         self.layer1 = nn.Sequential(
+            nn.ReflectionPad2d(2),
             nn.Conv2d(input_channels, 32, 7, stride=2, bias=False),
             nn.GroupNorm(4, 32),
             nn.LeakyReLU())
         self.layer2 = nn.Sequential(
+            nn.ReflectionPad2d(1),
             nn.Conv2d(32, 32, 5, stride=2, bias=False),
             nn.GroupNorm(4, 32),
             nn.LeakyReLU())
@@ -65,7 +67,7 @@ class D2DConvNet(nn.Module):
             nn.Conv2d(64, 64, 3, bias=False),
             nn.GroupNorm(4, 64),
             nn.LeakyReLU())
-        self.global_avg_pool = nn.AdaptiveAvgPool3d(1)
+        self.global_avg_pool = nn.AdaptiveAvgPool2d(1)
 
     def forward(self, x):
         x = self.layer1(x)
