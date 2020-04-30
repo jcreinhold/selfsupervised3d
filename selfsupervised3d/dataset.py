@@ -17,7 +17,10 @@ Author: Jacob Reinhold (jacob.reinhold@jhu.edu)
 Created on: April 28, 2020
 """
 
-__all__ = ['DoerschDataset',
+__all__ = ['BlendowskiDataset',
+           'blendowski_collate',
+           'blendowski_patches',
+           'DoerschDataset',
            'doersch_collate',
            'doersch_patches']
 
