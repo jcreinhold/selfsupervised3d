@@ -48,28 +48,28 @@ class D2DConvNet(nn.Module):
         # takes 3 neighboring slices in the channel dimension as input
         self.layer1 = nn.Sequential(
             nn.ReflectionPad2d(2),
-            nn.Conv2d(input_channels, input_channels//2, 7, stride=2, bias=False),
-            nn.GroupNorm(4, input_channels//2),
+            nn.Conv2d(input_channels, descriptor_size//2, 7, stride=2, bias=False),
+            nn.GroupNorm(4, descriptor_size//2),
             nn.LeakyReLU())
         self.layer2 = nn.Sequential(
             nn.ReflectionPad2d(1),
-            nn.Conv2d(input_channels//2, input_channels//2, 5, stride=2, bias=False),
-            nn.GroupNorm(4, input_channels//2),
+            nn.Conv2d(descriptor_size//2, descriptor_size//2, 5, stride=2, bias=False),
+            nn.GroupNorm(4, descriptor_size//2),
             nn.LeakyReLU())
         self.layer3 = nn.Sequential(
-            nn.Conv2d(input_channels//2, input_channels, 3, bias=False),
-            nn.GroupNorm(4, input_channels),
+            nn.Conv2d(descriptor_size//2, descriptor_size, 3, bias=False),
+            nn.GroupNorm(4, descriptor_size),
             nn.LeakyReLU())
         self.layer4 = nn.Sequential(
-            nn.Conv2d(input_channels, input_channels, 3, bias=False),
-            nn.GroupNorm(4, input_channels),
+            nn.Conv2d(descriptor_size, descriptor_size, 3, bias=False),
+            nn.GroupNorm(4, descriptor_size),
             nn.LeakyReLU())
         self.layer5 = nn.Sequential(
-            nn.Conv2d(input_channels, input_channels, 3, bias=False),
-            nn.GroupNorm(4, input_channels),
+            nn.Conv2d(descriptor_size, descriptor_size, 3, bias=False),
+            nn.GroupNorm(4, descriptor_size),
             nn.LeakyReLU())
         self.layer6 = nn.Sequential(
-            nn.Conv2d(input_channels, descriptor_size, 3, bias=False),
+            nn.Conv2d(descriptor_size, descriptor_size, 3, bias=False),
             nn.GroupNorm(4, descriptor_size),
             nn.LeakyReLU())
         self.global_avg_pool = nn.AdaptiveAvgPool2d(1)
