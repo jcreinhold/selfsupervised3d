@@ -213,7 +213,7 @@ def blendowski_collate(lst):
 
 
 class BlendowskiDataset(Dataset):
-    def __init__(self, img_dir:List[str], patch_size:float=0.4, patch_dim:int=42, offset:float=0.5,
+    def __init__(self, img_dir:List[str], patch_size:float=0.4, patch_dim:int=42, offset:float=0.3,
                  stack_size:float=0.05, stack_dim:int=3,
                  min_off_inplane:float=0.25, max_off_inplane:float=0.30,
                  min_off_throughplane:float=0.125, max_off_throughplane:float=0.25,
