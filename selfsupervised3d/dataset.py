@@ -132,7 +132,7 @@ def blendowski_patches(img:torch.Tensor, patch_size:float=0.4, patch_dim:int=42,
                        stack_size:float=0.05, stack_dim:int=3,
                        min_off_inplane:float=0.25, max_off_inplane:float=0.30,
                        min_off_throughplane:float=0.125, max_off_throughplane:float=0.25,
-                       heatmap_dim:int=19, sigma:int=15, throughplane_axis:int=0):
+                       heatmap_dim:int=19, scale:float=10., precision:float=15., throughplane_axis:int=0):
     """
     Creates patches and targets for self-supervised learning as described in [1]
 
@@ -148,6 +148,11 @@ def blendowski_patches(img:torch.Tensor, patch_size:float=0.4, patch_dim:int=42,
         min_off_throughplane (float): minimum offset in the throughplane direction
         max_off_throughplane (float): maximum offset in the throughplane direction
         heatmap_dim (int): dimension in pixels of the target heatmap
+        scale (float): constant scale value multiplying the gaussian term
+            (see the eq. in `Details on Heatmap Network Training` in [1])
+        precision (float): value of precision (1/var) in the gaussian term
+            (see the eq. in `Details on Heatmap Network Training` in [1])
+        throughplane_axis (int): axis selected as throughplane (0, 1, or 2)
 
     References:
         [1] M. Blendowski et al. "How to Learn from Unlabeled Volume Data:
@@ -185,8 +190,9 @@ def blendowski_patches(img:torch.Tensor, patch_size:float=0.4, patch_dim:int=42,
     qry = F.grid_sample(img, qry_grid, align_corners=True)[0,0,...]  # remove batch, channel dim w/ indexing
 
     ipa0, ipa1 = ip_axes[0], ip_axes[1]
-    dp_goal = torch.stack((qry_offset_[...,ipa0], qry_offset_[...,ipa1]), dim=-1)
-    hm_goal = heatmap(qry_offset[ipa0].item(), qry_offset[ipa1].item(), sigma, heatmap_dim)
+    dp_goal = torch.stack((qry_offset_[...,ipa0:ipa0+1], qry_offset_[...,ipa1:ipa1+1]), dim=1)
+    hm_goal = heatmap(qry_offset[ipa0].item(), qry_offset[ipa1].item(), scale, precision, heatmap_dim)
+    hm_goal = hm_goal.unsqueeze(0)
 
     return (ctr, qry), (dp_goal, hm_goal)
 
@@ -211,7 +217,7 @@ class BlendowskiDataset(Dataset):
                  stack_size:float=0.05, stack_dim:int=3,
                  min_off_inplane:float=0.25, max_off_inplane:float=0.30,
                  min_off_throughplane:float=0.125, max_off_throughplane:float=0.25,
-                 heatmap_dim:int=19, sigma:int=15, throughplane_axis:int=0):
+                 heatmap_dim:int=19, scale:float=10., precision:float=15., throughplane_axis:int=0):
         """
         PyTorch Dataset class to create patches and targets for
         self-supervised learning as described in [1]
@@ -228,6 +234,11 @@ class BlendowskiDataset(Dataset):
             min_off_throughplane (float): minimum offset in the throughplane direction
             max_off_throughplane (float): maximum offset in the throughplane direction
             heatmap_dim (int): dimension in pixels of the target heatmap
+            scale (float): constant scale value multiplying the gaussian term
+                (see the eq. in `Details on Heatmap Network Training` in [1])
+            precision (float): value of precision (1/var) in the gaussian term
+                (see the eq. in `Details on Heatmap Network Training` in [1])
+            throughplane_axis (int): axis selected as throughplane (0, 1, or 2)
 
         References:
             [1] M. Blendowski et al. "How to Learn from Unlabeled Volume Data:
@@ -247,7 +258,8 @@ class BlendowskiDataset(Dataset):
         self.min_off_throughplane = min_off_throughplane
         self.max_off_throughplane = max_off_throughplane
         self.heatmap_dim = heatmap_dim
-        self.sigma = sigma
+        self.scale = scale
+        self.precision = precision
         self.throughplane_axis = throughplane_axis
 
     def __len__(self):
@@ -260,5 +272,5 @@ class BlendowskiDataset(Dataset):
                                     self.stack_size, self.stack_dim,
                                     self.min_off_inplane, self.max_off_inplane,
                                     self.min_off_throughplane, self.max_off_throughplane,
-                                    self.heatmap_dim, self.sigma, self.throughplane_axis)
+                                    self.heatmap_dim, self.scale, self.precision, self.throughplane_axis)
         return sample

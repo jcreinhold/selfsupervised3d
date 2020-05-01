@@ -95,8 +95,13 @@ class HeatNet(nn.Module):
             Self-supervised 3D Context Feature Learning." MICCAI. 2019.
         [2] https://github.com/multimodallearning/miccai19_self_supervision
     """
-    def __init__(self):
+    def __init__(self, heatmap_dim:int=19):
+        """
+        Args:
+            heatmap_dim (int): side length of output heatmap
+        """
         super().__init__()
+        self.heatmap_dim = heatmap_dim
         self.layer1 = nn.Sequential(
             nn.Conv2d(128, 64, 1, bias=False),
             nn.GroupNorm(4, 64),
@@ -131,6 +136,9 @@ class HeatNet(nn.Module):
             nn.LeakyReLU())
         self.layer5_1 = nn.Conv2d(4, 1, 3, padding=1)
 
+    def interp(self, x, size):
+        return F.interpolate(x, size=size, mode='bilinear', align_corners=True)
+
     def forward(self, x1, x2):
         x = torch.cat((x1, x2), 1)
         x = self.layer1(x)
@@ -138,12 +146,12 @@ class HeatNet(nn.Module):
         x = self.layer2_a(x)
         x = self.layer3_0(x)
         x = self.layer3_1(x)
-        x = F.interpolate(x, size=(11, 11), mode='bilinear', align_corners=True)
+        x = self.interp(x, (11, 11))
         x = self.layer4_0(x)
         x = self.layer4_1(x)
         x = F.avg_pool2d(x, 3, stride=1, padding=1)
         x = self.layer5_0(x)
-        x = F.interpolate(x, size=(19, 19), mode='bilinear', align_corners=True)
+        x = self.interp(x, (self.heatmap_dim, self.heatmap_dim))
         x = self.layer5_1(x)
         return x
 

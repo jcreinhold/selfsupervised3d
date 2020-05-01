@@ -20,14 +20,16 @@ __all__ = ['heatmap']
 import torch
 
 
-def heatmap(xdelta:float, ydelta:float, sigma:float, heatmap_dim:int=19):
+def heatmap(xdelta:float, ydelta:float, scale:float=10., precision:float=15., heatmap_dim:int=19):
     """
     creates a (gaussian-blurred) heatmap from x- and y-offsets
 
     Args:
-        xdelta (float): offset for gauss-blob in x direction
-        ydelta (float): offset for gauss-blob in y direction
-        sigma (float)-> value of sigma in the gaussian term
+        xdelta (float): offset for gaussian-blob in x direction
+        ydelta (float): offset for gaussian-blob in y direction
+        scale (float): constant scale value multiplying the gaussian term
+            (see the eq. in `Details on Heatmap Network Training` in [1])
+        precision (float): value of precision (1/var) in the gaussian term
             (see the eq. in `Details on Heatmap Network Training` in [1])
         heatmap_dim (int): side length of the (square) output heatmap
 
@@ -38,6 +40,5 @@ def heatmap(xdelta:float, ydelta:float, sigma:float, heatmap_dim:int=19):
     """
     grid = torch.linspace(-1, 1, heatmap_dim)
     g1, g0 = torch.meshgrid(grid, grid)
-    g1, g0 = g1.unsqueeze(0), g0.unsqueeze(0)
-    out = 10 * torch.exp(-1 * sigma * ((g0 - xdelta)**2 + (g1 - ydelta)**2))
+    out = scale * torch.exp(-1 * precision * ((g0 - xdelta)**2 + (g1 - ydelta)**2))
     return out
