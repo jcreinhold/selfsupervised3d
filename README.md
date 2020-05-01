@@ -33,6 +33,10 @@ Tutorial
 
 [5 minute Overview](https://github.com/jcreinhold/selfsupervised3d/blob/master/tutorials/5min_tutorial.md)
 
+[Example Doersch-style [1,2] Notebook](https://nbviewer.jupyter.org/github/jcreinhold/selfsupervised3d/blob/master/tutorials/doersch.ipynb)
+
+[Example Blendowski-style [2] Notebook](https://nbviewer.jupyter.org/github/jcreinhold/selfsupervised3d/blob/master/tutorials/blendowski.ipynb)
+
 Test Package
 ------------
 
