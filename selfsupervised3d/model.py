@@ -86,7 +86,7 @@ class HeatNet(nn.Module):
     Quoting, and paraphrasing where appropriate, from [2]:
     "in a siamese-fashion, process two patches with the [D2DConvNet] to
      generate feature descriptors for these patches and, subsequently, pass both
-     descriptors to HeatNet. These feature descriptors of size (128,1,1) are concatenated
+     descriptors to HeatNet. These feature descriptors of size (64,1,1) are concatenated
      and input to this network which is trained to output a spatial heatmap of size
      (1,19,19); the ground-truth is generated with the function `heatmap`"
 
@@ -103,7 +103,7 @@ class HeatNet(nn.Module):
         super().__init__()
         self.heatmap_dim = heatmap_dim
         self.layer1 = nn.Sequential(
-            nn.Conv2d(128, 64, 1, bias=False),
+            nn.Conv2d(2 * 64, 64, 1, bias=False),
             nn.GroupNorm(4, 64),
             nn.LeakyReLU())
         self.layer2 = nn.Sequential(
@@ -134,7 +134,9 @@ class HeatNet(nn.Module):
             nn.ConvTranspose2d(8, 4, 5, bias=False),
             nn.GroupNorm(4, 4),
             nn.LeakyReLU())
-        self.layer5_1 = nn.Conv2d(4, 1, 3, padding=1)
+        self.layer5_1 = nn.Sequential(
+            nn.ReflectionPad2d(1),
+            nn.Conv2d(4, 1, 3))
 
     def interp(self, x, size):
         return F.interpolate(x, size=size, mode='bilinear', align_corners=True)
@@ -149,7 +151,8 @@ class HeatNet(nn.Module):
         x = self.interp(x, (11, 11))
         x = self.layer4_0(x)
         x = self.layer4_1(x)
-        x = F.avg_pool2d(x, 3, stride=1, padding=1)
+        x = F.pad(x, [1, 1, 1, 1], mode='reflect')
+        x = F.avg_pool2d(x, 3, stride=1)
         x = self.layer5_0(x)
         x = self.interp(x, (self.heatmap_dim, self.heatmap_dim))
         x = self.layer5_1(x)
@@ -158,11 +161,11 @@ class HeatNet(nn.Module):
 
 class OffNet(nn.Module):
     """
-    Network creates a heatmap as described in [1].
+    Network attempts to find the offset parameters as described in [1].
     Quoting, and paraphrasing where appropriate, from [2]:
     "in a siamese-fashion, process two patches with the [D2DConvNet] to
      generate feature descriptors for these patches and, subsequently, pass both
-     descriptors to HeatNet. These feature descriptors of size (128,1,1) are concatenated
+     descriptors to HeatNet. These feature descriptors of size (64,1,1) are concatenated
      and input to this network which is trained to output the two offset parameters
      that define the in-plane displacement."
 
@@ -174,7 +177,7 @@ class OffNet(nn.Module):
     def __init__(self):
         super().__init__()
         self.layer1 = nn.Sequential(
-            nn.Conv2d(128, 128, 1, bias=False),
+            nn.Conv2d(2 * 64, 128, 1, bias=False),
             nn.GroupNorm(4, 128),
             nn.LeakyReLU())
         self.layer2 = nn.Sequential(
@@ -192,7 +195,7 @@ class OffNet(nn.Module):
         x = self.layer1(x)
         x = self.layer2(x)
         x = self.layer3(x)
-        x = self.layer_out(x)
+        x = self.layer_out(x).view(-1, 2)
         return x
 
 
