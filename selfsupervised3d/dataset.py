@@ -176,6 +176,9 @@ def blendowski_patches(img:torch.Tensor, patch_size:float=0.4, patch_dim:int=42,
     ctr_offset = torch.zeros(1, 1, 1, 1, 3).uniform_(-offset, offset)
     ctr_grid = patch_grid + ctr_offset
     ctr = F.grid_sample(img, ctr_grid, align_corners=True)[0,0,...]  # remove batch, channel dim w/ indexing
+    ctr = ctr.permute(0,1,2) if throughplane_axis == 0 else \
+          ctr.permute(1,0,2) if throughplane_axis == 1 else \
+          ctr.permute(2,0,1)
 
     # randomly generate displacements from center patch to create query patch
     qry_offset = torch.zeros(3)
@@ -188,6 +191,9 @@ def blendowski_patches(img:torch.Tensor, patch_size:float=0.4, patch_dim:int=42,
     qry_offset_ = qry_offset.view(1, 1, 1, 1, 3)
     qry_grid = ctr_grid + qry_offset_
     qry = F.grid_sample(img, qry_grid, align_corners=True)[0,0,...]  # remove batch, channel dim w/ indexing
+    qry = qry.permute(0,1,2) if throughplane_axis == 0 else \
+          qry.permute(1,0,2) if throughplane_axis == 1 else \
+          qry.permute(2,0,1)
 
     ipa0, ipa1 = ip_axes
     qo0, qo1 = qry_offset[ipa0].item(), qry_offset[ipa1].item()
