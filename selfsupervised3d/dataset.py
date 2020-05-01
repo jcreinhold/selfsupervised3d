@@ -189,9 +189,10 @@ def blendowski_patches(img:torch.Tensor, patch_size:float=0.4, patch_dim:int=42,
     qry_grid = ctr_grid + qry_offset_
     qry = F.grid_sample(img, qry_grid, align_corners=True)[0,0,...]  # remove batch, channel dim w/ indexing
 
-    ipa0, ipa1 = ip_axes[0], ip_axes[1]
-    dp_goal = torch.stack((qry_offset_[...,ipa0:ipa0+1], qry_offset_[...,ipa1:ipa1+1]), dim=1)
-    hm_goal = heatmap(qry_offset[ipa0].item(), qry_offset[ipa1].item(), scale, precision, heatmap_dim)
+    ipa0, ipa1 = ip_axes
+    qo0, qo1 = qry_offset[ipa0].item(), qry_offset[ipa1].item()
+    dp_goal = torch.tensor([qo0, qo1])
+    hm_goal = heatmap(qo0, qo1, scale, precision, heatmap_dim)
     hm_goal = hm_goal.unsqueeze(0)
 
     return (ctr, qry), (dp_goal, hm_goal)

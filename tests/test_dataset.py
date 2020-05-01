@@ -31,6 +31,14 @@ class TestDataset(unittest.TestCase):
         self.assertEqual(ctr.shape[1:], (10,10,10))
         self.assertEqual(qry.shape[1:], (10,10,10))
 
+    def test_blendowskidataset(self):
+        dataset = BlendowskiDataset([self.img_dir], patch_dim=10)
+        (ctr, qry), (dp_goal, hm_goal) = dataset[0]
+        self.assertEqual(dp_goal.size(), (2,))
+        self.assertEqual(hm_goal.size(), (1,19,19))
+        self.assertEqual(ctr.size(), (3,10,10))
+        self.assertEqual(qry.size(), (3,10,10))
+
     def tearDown(self):
         pass
 
