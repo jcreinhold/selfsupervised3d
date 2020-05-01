@@ -38,7 +38,12 @@ class D2DConvNet(nn.Module):
             Self-supervised 3D Context Feature Learning." MICCAI. 2019.
         [2] https://github.com/multimodallearning/miccai19_self_supervision
     """
-    def __init__(self, input_channels:int=3):
+    def __init__(self, input_channels:int=3, descriptor_size:int=64):
+        """
+        Args:
+            input_channels (int): number of input channels
+            descriptor_size (int): number of output channels for the feature descriptor
+        """
         super().__init__()
         # takes 3 neighboring slices in the channel dimension as input
         self.layer1 = nn.Sequential(
@@ -64,8 +69,8 @@ class D2DConvNet(nn.Module):
             nn.GroupNorm(4, 64),
             nn.LeakyReLU())
         self.layer6 = nn.Sequential(
-            nn.Conv2d(64, 64, 3, bias=False),
-            nn.GroupNorm(4, 64),
+            nn.Conv2d(64, descriptor_size, 3, bias=False),
+            nn.GroupNorm(4, descriptor_size),
             nn.LeakyReLU())
         self.global_avg_pool = nn.AdaptiveAvgPool2d(1)
 
@@ -95,15 +100,16 @@ class HeatNet(nn.Module):
             Self-supervised 3D Context Feature Learning." MICCAI. 2019.
         [2] https://github.com/multimodallearning/miccai19_self_supervision
     """
-    def __init__(self, heatmap_dim:int=19):
+    def __init__(self, descriptor_size:int=64, heatmap_dim:int=19):
         """
         Args:
+            descriptor_size (int): size of one feature descriptor
             heatmap_dim (int): side length of output heatmap
         """
         super().__init__()
         self.heatmap_dim = heatmap_dim
         self.layer1 = nn.Sequential(
-            nn.Conv2d(2 * 64, 64, 1, bias=False),
+            nn.Conv2d(2 * descriptor_size, 64, 1, bias=False),
             nn.GroupNorm(4, 64),
             nn.LeakyReLU())
         self.layer2 = nn.Sequential(
@@ -174,10 +180,14 @@ class OffNet(nn.Module):
             Self-supervised 3D Context Feature Learning." MICCAI. 2019.
         [2] https://github.com/multimodallearning/miccai19_self_supervision
     """
-    def __init__(self):
+    def __init__(self, descriptor_size:int=64):
+        """
+        Args:
+            descriptor_size (int): size of one feature descriptor
+        """
         super().__init__()
         self.layer1 = nn.Sequential(
-            nn.Conv2d(2 * 64, 128, 1, bias=False),
+            nn.Conv2d(2 * descriptor_size, 128, 1, bias=False),
             nn.GroupNorm(4, 128),
             nn.LeakyReLU())
         self.layer2 = nn.Sequential(
@@ -210,7 +220,12 @@ class DoerschNet(nn.Module):
             Self-supervised 3D Context Feature Learning." MICCAI. 2019.
         [2] https://github.com/multimodallearning/miccai19_self_supervision
     """
-    def __init__(self, input_channels:int=1):
+    def __init__(self, input_channels:int=1, descriptor_size:int=192):
+        """
+        Args:
+            input_channels (int): number of input channels
+            descriptor_size (int): number of output channels for the feature descriptor
+        """
         super().__init__()
         self.layer1 = nn.Sequential(
             nn.Conv3d(input_channels, 16, 5, bias=False),
@@ -237,8 +252,8 @@ class DoerschNet(nn.Module):
             nn.GroupNorm(4, 32),
             nn.LeakyReLU())
         self.layer7 = nn.Sequential(
-            nn.Conv3d(32, 3 * 64, 3, bias=False),
-            nn.GroupNorm(4, 3 * 64),
+            nn.Conv3d(32, descriptor_size, 3, bias=False),
+            nn.GroupNorm(4, descriptor_size),
             nn.LeakyReLU())
         self.global_avg_pool = nn.AdaptiveAvgPool3d(1)
 
@@ -267,10 +282,14 @@ class DoerschDecodeNet(nn.Module):
             Self-supervised 3D Context Feature Learning." MICCAI. 2019.
         [2] https://github.com/multimodallearning/miccai19_self_supervision
     """
-    def __init__(self):
+    def __init__(self, descriptor_size:int=192):
+        """
+        Args:
+            descriptor_size (int): size of one feature descriptor
+        """
         super().__init__()
         self.layer1 = nn.Sequential(
-            nn.Conv3d(2 * 3 * 64, 64, 1, bias=False),
+            nn.Conv3d(2 * descriptor_size, 64, 1, bias=False),
             nn.GroupNorm(4, 64),
             nn.LeakyReLU())
         self.layer2 = nn.Sequential(
