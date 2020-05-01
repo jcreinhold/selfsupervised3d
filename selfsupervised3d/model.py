@@ -48,28 +48,28 @@ class D2DConvNet(nn.Module):
         # takes 3 neighboring slices in the channel dimension as input
         self.layer1 = nn.Sequential(
             nn.ReflectionPad2d(2),
-            nn.Conv2d(input_channels, 32, 7, stride=2, bias=False),
-            nn.GroupNorm(4, 32),
+            nn.Conv2d(input_channels, input_channels//2, 7, stride=2, bias=False),
+            nn.GroupNorm(4, input_channels//2),
             nn.LeakyReLU())
         self.layer2 = nn.Sequential(
             nn.ReflectionPad2d(1),
-            nn.Conv2d(32, 32, 5, stride=2, bias=False),
-            nn.GroupNorm(4, 32),
+            nn.Conv2d(input_channels//2, input_channels//2, 5, stride=2, bias=False),
+            nn.GroupNorm(4, input_channels//2),
             nn.LeakyReLU())
         self.layer3 = nn.Sequential(
-            nn.Conv2d(32, 64, 3, bias=False),
-            nn.GroupNorm(4, 64),
+            nn.Conv2d(input_channels//2, input_channels, 3, bias=False),
+            nn.GroupNorm(4, input_channels),
             nn.LeakyReLU())
         self.layer4 = nn.Sequential(
-            nn.Conv2d(64, 64, 3, bias=False),
-            nn.GroupNorm(4, 64),
+            nn.Conv2d(input_channels, input_channels, 3, bias=False),
+            nn.GroupNorm(4, input_channels),
             nn.LeakyReLU())
         self.layer5 = nn.Sequential(
-            nn.Conv2d(64, 64, 3, bias=False),
-            nn.GroupNorm(4, 64),
+            nn.Conv2d(input_channels, input_channels, 3, bias=False),
+            nn.GroupNorm(4, input_channels),
             nn.LeakyReLU())
         self.layer6 = nn.Sequential(
-            nn.Conv2d(64, descriptor_size, 3, bias=False),
+            nn.Conv2d(input_channels, descriptor_size, 3, bias=False),
             nn.GroupNorm(4, descriptor_size),
             nn.LeakyReLU())
         self.global_avg_pool = nn.AdaptiveAvgPool2d(1)
@@ -109,40 +109,40 @@ class HeatNet(nn.Module):
         super().__init__()
         self.heatmap_dim = heatmap_dim
         self.layer1 = nn.Sequential(
-            nn.Conv2d(2 * descriptor_size, 64, 1, bias=False),
-            nn.GroupNorm(4, 64),
+            nn.Conv2d(2*descriptor_size, descriptor_size, 1, bias=False),
+            nn.GroupNorm(4, descriptor_size),
             nn.LeakyReLU())
         self.layer2 = nn.Sequential(
-            nn.Conv2d(64, 32, 1, bias=False),
-            nn.GroupNorm(4, 32),
+            nn.Conv2d(descriptor_size, descriptor_size//2, 1, bias=False),
+            nn.GroupNorm(4, descriptor_size//2),
             nn.LeakyReLU())
         self.layer2_a = nn.Sequential(
-            nn.Conv2d(32, 16, 1, bias=False),
-            nn.GroupNorm(4, 16),
+            nn.Conv2d(descriptor_size//2, descriptor_size//4, 1, bias=False),
+            nn.GroupNorm(4, descriptor_size//4),
             nn.LeakyReLU())
         self.layer3_0 = nn.Sequential(
-            nn.ConvTranspose2d(16, 16, 5, bias=False),
-            nn.GroupNorm(4, 16),
+            nn.ConvTranspose2d(descriptor_size//4, descriptor_size//4, 5, bias=False),
+            nn.GroupNorm(4, descriptor_size//4),
             nn.LeakyReLU())
         self.layer3_1 = nn.Sequential(
-            nn.Conv2d(16, 16, 3, bias=False),
-            nn.BatchNorm2d(16),
+            nn.Conv2d(descriptor_size//4, descriptor_size//4, 3, bias=False),
+            nn.BatchNorm2d(descriptor_size//4),
             nn.LeakyReLU())
         self.layer4_0 = nn.Sequential(
-            nn.ConvTranspose2d(16, 16, 5, bias=False),
-            nn.GroupNorm(4, 16),
+            nn.ConvTranspose2d(descriptor_size//4, descriptor_size//4, 5, bias=False),
+            nn.GroupNorm(4, descriptor_size//4),
             nn.LeakyReLU())
         self.layer4_1 = nn.Sequential(
-            nn.Conv2d(16, 8, 3, bias=False),
-            nn.BatchNorm2d(8),
+            nn.Conv2d(descriptor_size//4, descriptor_size//8, 3, bias=False),
+            nn.BatchNorm2d(descriptor_size//8),
             nn.LeakyReLU())
         self.layer5_0 = nn.Sequential(
-            nn.ConvTranspose2d(8, 4, 5, bias=False),
-            nn.GroupNorm(4, 4),
+            nn.ConvTranspose2d(descriptor_size//8, descriptor_size//16, 5, bias=False),
+            nn.GroupNorm(4, descriptor_size//16),
             nn.LeakyReLU())
         self.layer5_1 = nn.Sequential(
             nn.ReflectionPad2d(1),
-            nn.Conv2d(4, 1, 3))
+            nn.Conv2d(descriptor_size//16, 1, 3))
 
     def interp(self, x, size):
         return F.interpolate(x, size=size, mode='bilinear', align_corners=True)
@@ -187,18 +187,18 @@ class OffNet(nn.Module):
         """
         super().__init__()
         self.layer1 = nn.Sequential(
-            nn.Conv2d(2 * descriptor_size, 128, 1, bias=False),
-            nn.GroupNorm(4, 128),
+            nn.Conv2d(2*descriptor_size, 2*descriptor_size, 1, bias=False),
+            nn.GroupNorm(4, 2 * descriptor_size),
             nn.LeakyReLU())
         self.layer2 = nn.Sequential(
-            nn.Conv2d(128, 64, 1, bias=False),
-            nn.GroupNorm(4, 64),
+            nn.Conv2d(2*descriptor_size, descriptor_size, 1, bias=False),
+            nn.GroupNorm(4, descriptor_size),
             nn.LeakyReLU())
         self.layer3 = nn.Sequential(
-            nn.Conv2d(64, 32, 1, bias=False),
-            nn.GroupNorm(4, 32),
+            nn.Conv2d(descriptor_size, descriptor_size//2, 1, bias=False),
+            nn.GroupNorm(4, descriptor_size//2),
             nn.LeakyReLU())
-        self.layer_out = nn.Conv2d(32, 2, 1)
+        self.layer_out = nn.Conv2d(descriptor_size//2, 2, 1)
 
     def forward(self, x1, x2):
         x = torch.cat((x1, x2), 1)
@@ -220,39 +220,41 @@ class DoerschNet(nn.Module):
             Self-supervised 3D Context Feature Learning." MICCAI. 2019.
         [2] https://github.com/multimodallearning/miccai19_self_supervision
     """
-    def __init__(self, input_channels:int=1, descriptor_size:int=192):
+    def __init__(self, input_channels:int=1, descriptor_size:int=192, conv_channels:int=16):
         """
         Args:
             input_channels (int): number of input channels
             descriptor_size (int): number of output channels for the feature descriptor
+            conv_channels (int): number of channels in the first conv layer
+                (will be selectively multiplied by two in the proceeding channels)
         """
         super().__init__()
         self.layer1 = nn.Sequential(
-            nn.Conv3d(input_channels, 16, 5, bias=False),
-            nn.GroupNorm(4, 16),
+            nn.Conv3d(input_channels, conv_channels, 5, bias=False),
+            nn.GroupNorm(4, conv_channels),
             nn.LeakyReLU())
         self.layer2 = nn.Sequential(
-            nn.Conv3d(16, 32, 3, dilation=2, bias=False),
-            nn.GroupNorm(4, 32),
+            nn.Conv3d(conv_channels, 2*conv_channels, 3, dilation=2, bias=False),
+            nn.GroupNorm(4, 2*conv_channels),
             nn.LeakyReLU())
         self.layer3 = nn.Sequential(
-            nn.Conv3d(32, 32, 3, dilation=2, bias=False),
-            nn.GroupNorm(4, 32),
+            nn.Conv3d(2*conv_channels, 2*conv_channels, 3, dilation=2, bias=False),
+            nn.GroupNorm(4, 2*conv_channels),
             nn.LeakyReLU())
         self.layer4 = nn.Sequential(
-            nn.Conv3d(32, 32, 3, dilation=2, bias=False),
-            nn.GroupNorm(4, 32),
+            nn.Conv3d(2*conv_channels, 2*conv_channels, 3, dilation=2, bias=False),
+            nn.GroupNorm(4, 2*conv_channels),
             nn.LeakyReLU())
         self.layer5 = nn.Sequential(
-            nn.Conv3d(32, 32, 3, bias=False),
-            nn.GroupNorm(4, 32),
+            nn.Conv3d(2*conv_channels, 2*conv_channels, 3, bias=False),
+            nn.GroupNorm(4, 2*conv_channels),
             nn.LeakyReLU())
         self.layer6 = nn.Sequential(
-            nn.Conv3d(32, 32, 5, bias=False),
-            nn.GroupNorm(4, 32),
+            nn.Conv3d(2*conv_channels, 2*conv_channels, 5, bias=False),
+            nn.GroupNorm(4, 2*conv_channels),
             nn.LeakyReLU())
         self.layer7 = nn.Sequential(
-            nn.Conv3d(32, descriptor_size, 3, bias=False),
+            nn.Conv3d(2*conv_channels, descriptor_size, 3, bias=False),
             nn.GroupNorm(4, descriptor_size),
             nn.LeakyReLU())
         self.global_avg_pool = nn.AdaptiveAvgPool3d(1)
@@ -282,25 +284,27 @@ class DoerschDecodeNet(nn.Module):
             Self-supervised 3D Context Feature Learning." MICCAI. 2019.
         [2] https://github.com/multimodallearning/miccai19_self_supervision
     """
-    def __init__(self, descriptor_size:int=192):
+    def __init__(self, descriptor_size:int=192, conv_channels:int=64):
         """
         Args:
             descriptor_size (int): size of one feature descriptor
+            conv_channels (int): number of channels in the first conv layer
+                (will be selectively divided by two in the proceeding channels)
         """
         super().__init__()
         self.layer1 = nn.Sequential(
-            nn.Conv3d(2 * descriptor_size, 64, 1, bias=False),
-            nn.GroupNorm(4, 64),
+            nn.Conv3d(2*descriptor_size, conv_channels, 1, bias=False),
+            nn.GroupNorm(4, conv_channels),
             nn.LeakyReLU())
         self.layer2 = nn.Sequential(
-            nn.Conv3d(64, 64, 1, bias=False),
-            nn.GroupNorm(4, 64),
+            nn.Conv3d(conv_channels, conv_channels, 1, bias=False),
+            nn.GroupNorm(4, conv_channels),
             nn.LeakyReLU())
         self.layer3 = nn.Sequential(
-            nn.Conv3d(64, 32, 1, bias=False),
-            nn.GroupNorm(4, 32),
+            nn.Conv3d(conv_channels, conv_channels//2, 1, bias=False),
+            nn.GroupNorm(4, conv_channels//2),
             nn.LeakyReLU())
-        self.layer_out = nn.Conv3d(32, 6, 1)
+        self.layer_out = nn.Conv3d(conv_channels//2, 6, 1)
 
     def forward(self, x1, x2):
         x = torch.cat((x1, x2), 1)
