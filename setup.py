@@ -22,7 +22,7 @@ with open('LICENSE') as f:
 
 args = dict(
     name='selfsupervised3d',
-    version='0.1.0',
+    version='0.2.0',
     description="Implements functions to support a 3D self-supervised learning scheme",
     long_description=readme,
     author='Jacob Reinhold',

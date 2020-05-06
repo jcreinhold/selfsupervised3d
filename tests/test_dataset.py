@@ -13,8 +13,6 @@ Created on: April 29, 2020
 import os
 import unittest
 
-import nibabel as nib
-
 from selfsupervised3d.dataset import *
 
 
@@ -38,6 +36,13 @@ class TestDataset(unittest.TestCase):
         self.assertEqual(hm_goal.size(), (1,19,19))
         self.assertEqual(ctr.size(), (3,10,10))
         self.assertEqual(qry.size(), (3,10,10))
+
+    def test_contextdataset(self):
+        dataset = ContextDataset([self.img_dir])
+        src, tgt, mask = dataset[0]
+        self.assertEqual(src.size(), (1,51,64,64))
+        self.assertEqual(tgt.size(), (1,51,64,64))
+        self.assertEqual(mask.size(), (1,51,64,64))
 
     def tearDown(self):
         pass
