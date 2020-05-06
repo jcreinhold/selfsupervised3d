@@ -109,11 +109,11 @@ class ContextDataset(Dataset):
         tgt = np.stack([nib.load(fn).get_fdata(dtype=np.float32) for fn in fns])
         idx_mask_fn = self.mask_fns[idx]
         if idx_mask_fn is None:
-            idx_mask = tgt[0] > tgt[0].mean()
+            idx_mask = (tgt[0] > tgt[0].mean()).astype(np.float32)
         else:
             idx_mask = nib.load(idx_mask_fn).get_fdata(dtype=np.float32)
         mask = create_multiblock_mask(idx_mask, self.n_blocks, self.size, self.n_erode)
         mask = mask[None,...]   # add a channel dimension to enable broadcasting in the next step
-        src = tgt * (1 - mask)
+        src = tgt * (1. - mask)
         src, tgt, mask = torch.from_numpy(src), torch.from_numpy(tgt), torch.from_numpy(mask)
         return src, tgt, mask
