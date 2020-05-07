@@ -21,8 +21,8 @@ doersch
 .. automodule:: selfsupervised3d.model.doersch
    :members:
 
-franunet
-~~~~~~~~
+frankunet
+~~~~~~~~~
 
 .. automodule:: selfsupervised3d.model.frankunet
    :members:
