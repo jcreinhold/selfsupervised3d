@@ -3,7 +3,7 @@ selfsupervised3d
 
 [![Build Status](https://api.travis-ci.com/jcreinhold/selfsupervised3d.svg?branch=master)](https://travis-ci.com/jcreinhold/selfsupervised3d)
 [![Coverage Status](https://coveralls.io/repos/github/jcreinhold/selfsupervised3d/badge.svg?branch=master)](https://coveralls.io/github/jcreinhold/selfsupervised3d?branch=master)
-[![Documentation Status](https://readthedocs.org/projects/lesionqc/badge/?version=latest)](http://lesionqc.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/selfsupervised3d/badge/?version=latest)](http://selfsupervised3d.readthedocs.io/en/latest/?badge=latest)
 [![Python Versions](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-370/)
 
 This package provides functions to support self-supervised with 3D images (e.g., CT and MR structural images).
