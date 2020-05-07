@@ -12,9 +12,9 @@ This package provides functions to support self-supervised with 3D images (e.g.,
    :maxdepth: 2
    :caption: Contents:
 
-    dataset
-    model
-    loss
+   dataset
+   model
+   loss
 
 Indices and tables
 ==================
