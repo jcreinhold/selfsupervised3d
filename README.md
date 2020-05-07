@@ -1,10 +1,10 @@
 selfsupervised3d
 ================
 
-<!--[![Build Status](https://api.travis-ci.com/jcreinhold/lesionqc.svg?branch=master)](https://travis-ci.com/jcreinhold/lesionqc)
-[![Coverage Status](https://coveralls.io/repos/github/jcreinhold/lesionqc/badge.svg?branch=master)](https://coveralls.io/github/jcreinhold/lesionqc?branch=master)
+[![Build Status](https://api.travis-ci.com/jcreinhold/selfsupervised3d.svg?branch=master)](https://travis-ci.com/jcreinhold/selfsupervised3d)
+[![Coverage Status](https://coveralls.io/repos/github/jcreinhold/selfsupervised3d/badge.svg?branch=master)](https://coveralls.io/github/jcreinhold/selfsupervised3d?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/lesionqc/badge/?version=latest)](http://lesionqc.readthedocs.io/en/latest/?badge=latest)
-[![Python Versions](https://img.shields.io/badge/python-3.6%20%7C%203.7-blue.svg)](https://www.python.org/downloads/release/python-360/)-->
+[![Python Versions](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-370/)
 
 This package provides functions to support self-supervised with 3D images (e.g., CT and MR structural images).
 
@@ -37,6 +37,8 @@ Tutorial
 [Example Doersch-style [1,2] Notebook](https://nbviewer.jupyter.org/github/jcreinhold/selfsupervised3d/blob/master/tutorials/doersch.ipynb)
 
 [Example Blendowski-style [2] Notebook](https://nbviewer.jupyter.org/github/jcreinhold/selfsupervised3d/blob/master/tutorials/blendowski.ipynb)
+
+[Example Context Encoder-style [3] Notebook](https://nbviewer.jupyter.org/github/jcreinhold/selfsupervised3d/blob/master/tutorials/context.ipynb)
 
 Test Package
 ------------

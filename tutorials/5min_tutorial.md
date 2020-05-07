@@ -12,9 +12,13 @@ code was modeled after the code provided in the mentioned [code repository](http
 
 [Example Blendowski-style [2] Notebook](https://nbviewer.jupyter.org/github/jcreinhold/selfsupervised3d/blob/master/tutorials/blendowski.ipynb)
 
+[Example Context Encoder-style [3] Notebook](https://nbviewer.jupyter.org/github/jcreinhold/selfsupervised3d/blob/master/tutorials/context.ipynb)
+
 References
 ---------------
 
 [1] Blendowski, Maximilian, Hannes Nickisch, and Mattias P. Heinrich. "How to Learn from Unlabeled Volume Data: Self-supervised 3D Context Feature Learning." International Conference on Medical Image Computing and Computer-Assisted Intervention. Springer, Cham, 2019.
 
 [2] Doersch, Carl, Abhinav Gupta, and Alexei A. Efros. "Unsupervised visual representation learning by context prediction." Proceedings of the IEEE international conference on computer vision. 2015.
+
+[3] Pathak, Deepak, et al. "Context encoders: Feature learning by inpainting." Proceedings of the IEEE conference on computer vision and pattern recognition. 2016.
