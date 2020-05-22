@@ -45,7 +45,7 @@ class TestDataset(unittest.TestCase):
         self.assertEqual(mask.size(), (1,51,64,64))
 
     def test_contextdataset_patchsize(self):
-        dataset = ContextDataset([self.img_dir], patch_size=16)
+        dataset = ContextDataset([self.img_dir], size=4, patch_size=16)
         src, tgt, mask = dataset[0]
         self.assertEqual(src.size(), (1,16,16,16))
         self.assertEqual(tgt.size(), (1,16,16,16))
