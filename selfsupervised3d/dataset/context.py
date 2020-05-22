@@ -28,6 +28,7 @@ from torch.utils.data.dataset import Dataset
 from scipy.ndimage.morphology import binary_erosion
 
 from ..io import *
+from ..util import RandomCrop3D
 
 
 def create_block_mask(idx_mask:np.ndarray, size:int, n_erode:Optional[int]=None, fill_val:float=1.):
@@ -66,7 +67,8 @@ def context_collate(lst):
 
 class ContextDataset(Dataset):
     def __init__(self, img_dir:List[str], mask_dir:Optional[str]=None,
-                 n_blocks:int=5, size:int=10, n_erode:Optional[int]=4):
+                 n_blocks:int=5, size:int=10, n_erode:Optional[int]=4,
+                 patch_size:Optional[int]=None):
         """
         PyTorch Dataset class to create masked imaged to be inpainted as described in [1]
 
@@ -84,6 +86,8 @@ class ContextDataset(Dataset):
             n_erode (int): number of times to erode the mask before calculating
                 where to randomly insert a block (attempts to prevent the block from
                 extending too far out into empty space)
+            patch_size (int): output this size patch extracted from the image,
+                if None then use the whole image
 
         References:
             [1] D. Pathak et al. "Context encoders: Feature learning by inpainting."
@@ -99,6 +103,7 @@ class ContextDataset(Dataset):
         self.n_blocks = n_blocks
         self.size = size
         self.n_erode = n_erode
+        self.cropper = None if patch_size is None else RandomCrop3D(patch_size)
 
 
     def __len__(self):
@@ -112,6 +117,8 @@ class ContextDataset(Dataset):
             idx_mask = (tgt[0] > tgt[0].mean()).astype(np.float32)
         else:
             idx_mask = nib.load(idx_mask_fn).get_fdata(dtype=np.float32)
+        if self.cropper is not None:
+            tgt, idx_mask = self.cropper(tgt, idx_mask)
         mask = create_multiblock_mask(idx_mask, self.n_blocks, self.size, self.n_erode)
         mask = mask[None,...]   # add a channel dimension to enable broadcasting in the next step
         src = tgt * (1. - mask)
