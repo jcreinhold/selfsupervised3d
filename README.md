@@ -5,6 +5,7 @@ selfsupervised3d
 [![Coverage Status](https://coveralls.io/repos/github/jcreinhold/selfsupervised3d/badge.svg?branch=master)](https://coveralls.io/github/jcreinhold/selfsupervised3d?branch=master)
 [![Documentation Status](https://readthedocs.org/projects/selfsupervised3d/badge/?version=latest)](http://selfsupervised3d.readthedocs.io/en/latest/?badge=latest)
 [![Python Versions](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-370/)
+[![DOI](https://zenodo.org/badge/260018201.svg)](https://zenodo.org/badge/latestdoi/260018201)
 
 This package provides functions to support self-supervised with 3D images (e.g., CT and MR structural images).
 
@@ -47,6 +48,21 @@ Unit tests can be run from the main directory as follows:
 
     nosetests -v tests
 
+Citation
+--------
+
+If you use the `selfsupervised3d` package in an academic paper, please use the following citation:
+
+    @misc{reinhold2020selfsupervised3d,
+        author       = {Jacob Reinhold},
+        title        = {{selfsupervised3d}},
+        year         = 2020,
+        doi          = {10.5281/zenodo.3841254},
+        version      = {0.2.0},
+        publisher    = {Zenodo},
+        url          = {https://doi.org/10.5281/zenodo.3841254}
+    }
+ 
 References
 ---------------
 
