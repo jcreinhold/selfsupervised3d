@@ -11,9 +11,18 @@ Created on: April 29, 2020
 """
 
 import os
+import random
 import unittest
 
+import numpy as np
+import torch
+
 from selfsupervised3d.dataset import *
+
+seed = 1337
+random.seed(seed)
+np.random.seed(seed)
+torch.manual_seed(seed)
 
 
 class TestDataset(unittest.TestCase):
@@ -45,11 +54,11 @@ class TestDataset(unittest.TestCase):
         self.assertEqual(mask.size(), (1,51,64,64))
 
     def test_contextdataset_patchsize(self):
-        dataset = ContextDataset([self.img_dir], size=4, patch_size=16)
+        dataset = ContextDataset([self.img_dir], size=8, n_blocks=1, patch_size=32, n_erode=None)
         src, tgt, mask = dataset[0]
-        self.assertEqual(src.size(), (1,16,16,16))
-        self.assertEqual(tgt.size(), (1,16,16,16))
-        self.assertEqual(mask.size(), (1,16,16,16))
+        self.assertEqual(src.size(), (1,32,32,32))
+        self.assertEqual(tgt.size(), (1,32,32,32))
+        self.assertEqual(mask.size(), (1,32,32,32))
 
     def tearDown(self):
         pass
